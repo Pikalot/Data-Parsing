@@ -1,5 +1,18 @@
-import org.w3c.dom.*;
+/*------------------------------------------------------------------------------------------------------------------------
+Team Name:  PATH
+Members: 	Hoa Tuong Minh Nguyen
+		    Tuan-Anh Ho
+		    Paul Valdez
+		    Ali Fayed
+Team Leader: Hoa Tuong Minh Nguyen
 
+------------------------------------------------------------------------------------------------------------------------*/
+/**
+ * A program converts a Text File To CSV, JSON And XML Format using arguments.
+ * @author  Tuan-Anh Ho
+ * @version 1.0
+ */
+import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
@@ -25,9 +38,10 @@ public class ConvertFile {
 
     public static void convertFile(String sourceFile, String code) throws Exception {
         switch (code) {
-            case "-c": convertToCSV(sourceFile);
-            case "-j": convertToJSON(sourceFile);
-            case "-x": convertToXML(sourceFile);
+            case "-c": convertToCSV(sourceFile); break;
+            case "-j": convertToJSON(sourceFile); break;
+            case "-x": convertToXML(sourceFile); break;
+            default: System.out.println("Invalid code");
         }
     }
 
@@ -87,30 +101,12 @@ public class ConvertFile {
 
     public static void convertToXML(String filename) throws Exception {
         List<String[]> dataList = new ArrayList<>();
-        List<String> titleList = new ArrayList<>();
-        List<String> sanitizedTitles = new ArrayList<>();
         String outputFile = filename.split("\\.")[0] + ".xml";
 
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(filename))
                 ) {
             String line;
-
-            if ((line = reader.readLine()) != null) {
-                String[] titles = line.split("\t");
-                for (String title : titles)
-                    titleList.add(title);
-            }
-
-            for (String title : titleList) {
-                // Remove invalid characters or replace them with underscores
-                String sanitizedTitle = title.replaceAll("[^a-zA-Z0-9_]", "_");
-                // Ensure the title starts with a valid character (e.g., a letter or underscore)
-                if (!Character.isLetter(sanitizedTitle.charAt(0)) && sanitizedTitle.charAt(0) != '_') {
-                    sanitizedTitle = "_" + sanitizedTitle;
-                }
-                sanitizedTitles.add(sanitizedTitle);
-            }
 
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split("\t");
@@ -130,8 +126,10 @@ public class ConvertFile {
         for (String[] dataField : dataList) {
             Element item = document.createElement("item");
             for (int i = 0; i < dataField.length; i++) {
-                String title = sanitizedTitles.get(i);
-                Element field = document.createElement(title);
+                Element field = document.createElement("field_" + i);
+                /** I have tried to create a title array in order to create table title titles field.
+                 * Unfortunately, it breaks file layout. Hence, I insert a row and label them by field #
+                 */
                 field.appendChild(document.createTextNode(dataField[i]));
                 item.appendChild(field);
             }
