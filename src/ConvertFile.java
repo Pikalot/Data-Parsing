@@ -65,9 +65,9 @@ public class ConvertFile {
 
     public static void convertToJSON(String filename) throws Exception {
         String outputFile = filename.split("\\.")[0] + ".json";
-        List<String> jsonArray = new ArrayList<>();
-        List<String> titleList = new ArrayList<>();
-        // Create an Array of Jason Objects
+        List<String> jsonArray = new ArrayList<>();  //Create an Array of Jason Objects
+        List<String> titleList = new ArrayList<>(); //Contain first row as a table title
+
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(filename))
                 ) {
