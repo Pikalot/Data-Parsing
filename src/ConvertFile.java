@@ -66,18 +66,26 @@ public class ConvertFile {
     public static void convertToJSON(String filename) throws Exception {
         String outputFile = filename.split("\\.")[0] + ".json";
         List<String> jsonArray = new ArrayList<>();
-
+        List<String> titleList = new ArrayList<>();
         // Create an Array of Jason Objects
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(filename))
                 ) {
             String line;
+            if ((line = reader.readLine()) != null) { //First row is the title of the field
+                String[] titles = line.split("\t");
+                for (String title : titles)
+                    titleList.add(title);
+            }
             while ((line = reader.readLine()) != null) {
                 String[] fields = line.split("\t"); //Create all fields in a line as an array
                 StringBuilder jsonField = new StringBuilder("{"); //Add each field in a line to a jason bracket
                 for (int i = 0; i < fields.length; i++) {
-                    if (i != 0) jsonField.append(","); //Add a separator between each field
-                    jsonField.append("\"field_" + i + "\":\"" + fields[i] + "\"");
+                    if (i != 0) {
+                        jsonField.append(","); //Add a separator between each field
+                        jsonField.append("\n");
+                    }
+                    jsonField.append("\"" + titleList.get(i) + "\":\"" + fields[i] + "\"");
                 }
                 jsonField.append("}"); //Add closing field bracket
                 jsonArray.add(jsonField.toString()); //Add all jason objects to the array list
@@ -88,7 +96,10 @@ public class ConvertFile {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
             writer.write("["); //Start a JSON file
             for (int i = 0; i < jsonArray.size(); i ++) {
-                if (i != 0) writer.write(",");
+                if (i != 0) {
+                    writer.write(",");
+                    writer.newLine();
+                }
                 writer.write(jsonArray.get(i));
             }
             writer.write("]"); //Close a JSON file
